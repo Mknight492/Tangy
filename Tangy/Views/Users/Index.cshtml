@@ -1,0 +1,58 @@
+﻿@model IEnumerable<ApplicationUser>
+@{
+    ViewData["Title"] = "Index";
+}
+<br/>
+<h2>Manage Users</h2>
+<br/>
+
+<table class="form-border table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(m=>m.FirstName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m=>m.LastName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m=>m.Email)
+        </th>
+        <th>
+            @Html.DisplayNameFor(m=>m.PhoneNumber)
+        </th>
+        <th>
+
+        </th>
+
+    </tr>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(m => user.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(m => user.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(m => user.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(m => user.PhoneNumber)
+            </td>
+            <td style="width: 150px;">
+                <div class="btn-group" role="group">
+                    <a  class="btn btn-primary" href="@Url.Action("Edit/"+user.Id)">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a  class="btn btn-danger" href="@Url.Action("LockUser/"+user.Id)">
+                        <i class="fas fa-lock"></i>
+                    </a>
+                </div>
+
+            </td>
+        </tr>
+    }
+
+</table>
+

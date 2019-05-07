@@ -1,0 +1,58 @@
+﻿@using System.ComponentModel.DataAnnotations
+@model Tangy.Models.OrderViewModel.PlacedOrderViewModel
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+<div class="row" style="background: aliceblue; padding: 15px;">
+    <div class="col-7">
+        <div style="color: maroon"> Order Number @Model.OrderHeader.Id :</div>
+        <br/>
+        <ul class ="text-info">
+            @foreach (var item in Model.OrdersDetails)
+            {
+                <li>
+                    @(item.Name ) x @(item.Count)
+                </li>
+            }
+
+        </ul>
+
+
+    </div>
+    <div class="col-5">
+        <div class="row col-12"> &nbsp; </div>
+        <div class="row">
+            <div class="col-5">
+                Order Total :
+            </div>
+            <div class="col-7">
+                $@Html.DisplayFor(m => m.OrderHeader.Total) 
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-5">
+                Pick Up Time:
+            </div>
+            <div class="col-7">
+                @Html.DisplayFor(m => m.OrderHeader.PickupTime)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-5">
+                Order Status:
+            </div>
+            <div class="col-7">
+                @Html.DisplayFor(m => m.OrderHeader.Status)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-5">
+                Comments:
+            </div>
+            <div class="col-7">
+                @Html.DisplayFor(m => m.OrderHeader.Comments)
+            </div>
+        </div>
+    </div>
+</div>

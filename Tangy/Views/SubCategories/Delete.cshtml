@@ -1,0 +1,49 @@
+﻿@using System.Linq
+@using Tangy.Extensions
+@model Tangy.Models.SubCategory
+@{
+    ViewData["Title"] = "Delete";
+}
+<br />
+<h2> Delete SubCategory</h2>
+<hr />
+<div class="row form-border">
+    <div class="col-8">
+
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id"/>
+            <fieldset disabled>
+                <div class=" form-group row">
+                    <div class=" col-3">
+                        <label asp-for="Name"></label>
+                    </div>
+                    <div class="col-5">
+                        <input asp-for="Name" class="form-control"/>
+                    </div>
+
+                </div>
+                <div class=" form-group row">
+                    <div class=" col-3">
+                        <label asp-for="Category.Name"></label>
+                    </div>
+                    <div class="col-5">
+                        <input asp-for="Category.Name" class="form-control">
+                    </div>
+
+                </div>
+            </fieldset>
+            <br/>
+            <div class="form-group row">
+                <div class="col-3">
+
+                </div>
+                <div class=" col-5">
+                    <input type="submit" value="Confirm Delete" class="btn btn-danger"/>
+                    <a asp-action="Index" class="btn btn-success">Back To List </a>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>

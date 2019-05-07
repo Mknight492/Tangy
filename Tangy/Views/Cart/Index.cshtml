@@ -1,0 +1,256 @@
+﻿@model Tangy.Models.OrderViewModel.OrderViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+
+
+<br />
+<h2>Your Shopping Cart</h2>
+<br />
+
+<form method="post">
+    <div class=" border border-info">
+        @if (Model.ShoppingCarts.Any())
+        {
+            <div class="container" style="padding: 15px;">
+
+                <table class="table table-striped" style="width: 100%">
+                    <tr>
+                        <th>
+
+                        </th>
+                        <th style="width: 70px; text-align: center">
+                            @Html.DisplayNameFor(m => m.ShoppingCarts.FirstOrDefault().MenuItem.Price)
+                        </th>
+                        <th style="width: 70px; text-align: center">
+                            @Html.DisplayNameFor(m => m.ShoppingCarts.Count)
+                        </th>
+                        <th style="width: 70px; text-align: center">
+                            <p> Subtotal </p>
+                        </th>
+                        <th style="width: 140px; text-align: center">
+
+                        </th>
+                    </tr>
+                    @foreach (var shoppingcart in Model.ShoppingCarts)
+                    {
+                        <tr>
+                            <td>
+                                <b>
+                                    @Html.DisplayFor(c => shoppingcart.MenuItem.Name)
+                                </b>
+                                <br />
+                                @Html.DisplayFor(c => shoppingcart.MenuItem.Description)
+
+                            </td>
+                            <td style="width: 70px; text-align: center">
+                                @Html.DisplayFor(c => shoppingcart.MenuItem.Price)
+                            </td>
+                            <td style="width: 70px; text-align: center">
+                                @Html.DisplayFor(c => shoppingcart.Count)
+                            </td>
+                            <td style="width: 140px; text-align: center">
+                                @((shoppingcart.MenuItem.Price * shoppingcart.Count).ToString("0.00"))
+                            </td>
+                            <td style="width: 70px; text-align: center">
+                                <button type="submit" class="btn btn-primary" asp-action="Plus" asp-route-cartId="@shoppingcart.Id"><i class="fas fa-plus"></i></button>
+                                <button type="submit" class="btn btn-danger" asp-action="Minus" asp-route-cartId="@shoppingcart.Id"><i class="fas fa-minus"></i></button>
+                            </td>
+
+                        </tr>
+
+                    }
+
+
+                    <tr>
+                        <th></th>
+                        <th style="width: 70px; text-align: center">
+
+                        </th>
+                        <th style="width: 70px; text-align: center">
+                            <p> Total </p>
+                        </th>
+                        <th style="width: 70px; text-align: center">
+                            @Html.DisplayFor(c => Model.OrderHeader.Total)
+                        </th>
+                        <th style="width: 140px; text-align: center">
+
+                        </th>
+                    </tr>
+
+                </table>
+
+
+            </div>
+            <div class="container" style="padding: 15px;">
+                <div class="row">
+                    @* Row 1 Coupon Code*@
+                    <div class="col-2">
+                        <label class="custom-label"> Coupon Code: </label>
+                    </div>
+                    <div class="col-2">
+                        <input asp-for="@Model.OrderHeader.CouponCode" id="CouponCode" class="form-control" />
+                        <label class="text-danger" id="CouponWarning" style="display: none;"> Invalid Coupon or Doesn't meet criteria </label>
+                    </div>
+                    <div class="col-2">
+                        <input type="button" value="Apply" id="btnCoupon" class="btn btn-sm btn-success">
+                        <a asp-action="Index" asp-controller="Cart" class="btn btn-sm  btn-success" id="btnCouponRemove" style="display: none"> Remove </a>
+                    </div>
+                    <div class=" col-3"></div>
+                    <div class=" col-3" style="text-align: center">
+                        
+                    </div>
+                </div>
+                <div class="row">
+                    @* Row 2 order total + total price + pick up time *@
+                    <div class="col-2">
+                        <label class="custom-label"> Order Total: </label>
+                    </div>
+                    <div class="col-3">
+                        <input asp-for="OrderHeader.Total" readonly id="OrderTotal" class="form-control" />
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-2">
+                        <label class="custom-label"> Pick Up Time: </label>
+                    </div>
+                    <div class="col-3" style="text-align: center">
+                        <input asp-for="OrderHeader.PickupTime" id="PickUpTime" type="text" value="" class="form-control" />
+                        <label class="text-danger" id="SelectPickup" style="display: none;"> Please select Pickup Time </label>
+                    </div>
+                </div>
+                <div class="row">
+                    @* Row 3 comments*@
+                    <div class="col-2">
+                        <label class="custom-label"> Comments: </label>
+                    </div>
+                    <div class="col-10">
+                        <textarea asp-for="OrderHeader.Comments" class="form-control" style="height: 120px;"></textarea>
+                    </div>
+                </div>
+                <div class="row" style="padding-top: 5px;">
+                    @* Row 4 place order*@
+                    <div class="col-2">
+
+                    </div>
+                    <div class="col-5">
+                        <label class="text-danger" id="ShopClosed" style="display:none"> Shop closed: </label>
+                        <label class="text-danger" id="ShopClosing" style="display:none"> Shop closes 10pm: </label>
+                    </div>
+                    <div class="col-5 text-right">
+                        <button type="submit" class="btn btn-success" id="btnPlaceOrder" onclick="return validateInput()" > Place Order </button>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p> there are no items in your cart yet.. </p>
+        }
+    </div>
+</form>
+
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.js"></script>
+
+    <script>
+
+        function validateInput() {
+            var time = document.getElementById("PickUpTime").value;
+            if (time.toString() == '') {
+                $("#SelectPickup").show();
+                return false;
+            } else return true;
+
+        }
+
+        function hideElement() {
+            var time = document.getElementById("PickUpTime").value;
+            if (time.toString() != '') {
+                $("#SelectPickup").hide();
+
+            }
+        }
+
+        function hideElement2() {
+            document.getElementById('CouponWarning').style.display = 'none';
+
+
+        }
+
+
+        $(document).ready(function() {
+
+            var curDt = new Date();            
+            //12-10pm
+            var minTime = "";
+            if (curDt.getHours() < 11) {
+                minTime = '12:00pm';
+            }
+            else {
+                if (curDt.getMinutes() < 30) {
+                    minTime = (curDt.getHours() + 1).toString() + ':00pm';
+                } else {
+                    minTime = (curDt.getHours() + 1).toString() + ':30pm';
+                }
+            }
+
+            if (curDt.getHours() >24) {
+               
+                
+                $('#PickUpTime').prop("disabled", true);
+                $('#btnPlaceOrder').prop("disabled", true );
+                $('#ShopClosing').show();
+                //No more orders
+            }
+
+            $('#PickUpTime').timepicker({
+                'minTime': minTime,
+                'maxTime': '10:00pm'
+            });
+
+            $('#PickUpTime').change(function() {
+                hideElement();
+            });
+
+            $('#CouponCode').change(function() {
+                hideElement2();
+            });
+
+
+        });
+
+        $('#btnCoupon').click(function() {
+            var couponCode = document.getElementById('CouponCode').value;
+            var orderTotal = document.getElementById('OrderTotal').value;
+
+            $.ajax({
+                url: '/API/CouponAPI?orderTotal=' + orderTotal + "&couponCode=" + couponCode,
+                type: 'GET',
+                dataType: 'text',
+                success: function(data, textStatus, xhr) {
+                    var splitData = data.split(":");
+                    if (splitData[1] == "S") {
+                        $('#OrderTotal').attr('value', Math.round(splitData[0] * 100) / 100);
+                        document.getElementById('CouponCode').readOnly = true;
+                        document.getElementById('btnCouponRemove').style.display = '';
+                        document.getElementById('btnCoupon').style.display = 'none';
+                    }
+                    if (splitData[1] == 'E') {
+                        document.getElementById('CouponWarning').style.display = '';
+
+
+                    }
+
+                }
+            });
+        });
+
+
+
+
+
+
+    </script>
+}

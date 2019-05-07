@@ -1,0 +1,163 @@
+﻿@model List<ShoppingCart>
+@inject UserManager<ApplicationUser> userManager
+@{
+    ViewData["Title"] = "Default";
+}
+
+@*<%-- used for ajax in AddAntiForgeryToken() --%>*@
+<form id="__AjaxAntiForgeryForm" action="#" method="post">@Html.AntiForgeryToken()</form>
+
+
+    <div class="row container shopping__cart">
+        <div class=" col-1"></div>
+        <div class="col-10">
+            <h4 class="d-flex mb-3">
+                <span class="text-muted"> &nbsp; Your cart: &nbsp; </span>
+                <span class="badge badge-secondary badge-pill"><i class="fas fa-shopping-cart"></i></span>
+            </h4>
+            @if (Model.Any())
+            {
+
+                <ul class="list-group mb-3">
+                    @{ var total = 0.0; }
+
+
+                    @foreach (var shoppingCart in Model)
+                    {
+                        <li class="list-group-item d-flex justify-content-between shopping__cart--item" data-menuid="@shoppingCart.MenuItemId">
+                            <div>
+                                <h6 class="my-0">@shoppingCart.MenuItem.Name </h6>
+                                <small class="text-muted">Quantity: @shoppingCart.Count &nbsp;</small>
+                                <button type="button" class="btn btn-sm btn-primary btn__plus"><i class="fas fa-plus"></i></button>
+                                <button type="submit" class="btn btn-sm btn-danger btn__minus"><i class="fas fa-minus"></i></button>
+                            </div>
+                            <span class="text-muted">
+                                @Math.Round(((double)shoppingCart.MenuItem.Price * (double)shoppingCart.Count), 2).ToString("0.00")
+
+                            </span>
+                        </li>
+                        total += shoppingCart.MenuItem.Price * shoppingCart.Count;
+
+                    }
+
+                    <li class="list-group-item d-flex justify-content-between text-success bg-light">
+                        <span class="text-info"> Total (NZD) </span>
+                        <strong class="text-info total__cost">$@total.ToString("0.00") </strong>
+                    </li>
+
+
+                </ul>
+
+
+                <div style="align-content: center">
+                    <a asp-controller="Cart" class="btn btn-primary">Checkout:</a>
+                </div>
+            }
+            else
+            {
+                <p> your cart is empty</p>
+            }
+        </div>
+    </div>
+
+
+
+
+<script>
+    console.log("?");
+    window.addEventListener('load',
+        () => {
+
+            console.log("working");
+            document.querySelector('.shopping__cart, .shopping__cart *').addEventListener('click', e => {
+                editMenuItem(e);
+                var total = document.querySelector('.total__cost').innerHTML;
+
+
+
+            });
+        });
+
+    var elements = {
+        totalCost: document.querySelector('.total__cost')
+    }
+
+
+    var editMenuItem = function (e) {
+        var menuid = e.target.closest('.shopping__cart--item').dataset.menuid;
+        if (e.target.matches('.btn__plus, .btn__plus *')) {
+            ajaxRequest(e, menuid, 'flag');
+        };
+        if (e.target.matches('.btn__minus, .btn__minus *')) {
+            ajaxRequest(e, menuid, 'minus');
+        };
+
+    }
+
+
+
+    var ajaxRequest = function (e, menuid, flag) {
+
+        $.ajax({
+            url: '/API/Index?menuid=' + menuid + "&type=" + flag,
+            type: 'POST',
+            dataType: 'json',
+            data: AddAntiForgeryToken({ id: parseInt($(this).attr("title")) }),
+            success: function (data, textStatus, xhr) {
+                if (data.Count > 0) {
+                    var html = getFormatedHtml(data);
+                    e.target.closest('.shopping__cart--item').insertAdjacentHTML('afterEnd', html);
+                }
+                var li = e.target.closest('.shopping__cart--item');
+                li.parentElement.removeChild(li);
+
+                var sign = 1;
+                if (flag === 'minus') sign = -1;
+
+                var total = document.querySelector('.total__cost').innerHTML;
+                total = parseFloat(total.split('$')[1]) + (data.MenuItem.Price * sign);
+                document.querySelector('.total__cost').innerHTML = '$ ' + total.toFixed(2);
+                return data;
+            }
+        });
+
+    }
+
+
+
+    var getFormatedHtml = function (shoppingCart) {
+
+        var html = '<li class="list-group-item d-flex justify-content-between shopping__cart--item" data-menuid="' +
+            shoppingCart.MenuItemId +
+            '"><div><h6 class="my - 0">' +
+            shoppingCart.MenuItem.Name +
+            '</h6 > <small class="text-muted">Quantity: ' +
+            shoppingCart.Count +
+            '&nbsp; </small><button type = "button" class="btn btn-sm btn-primary btn__plus" asp-controller="Home" asp-action="Plus" asp-route-cartId="' +
+            shoppingCart.Id +
+            '" > <i class="fas fa-plus"></i></button> <button type="button" class="btn btn-sm btn-danger btn__minus" asp-controller="Home" asp-action="Minus" asp-route-cartId="' +
+            shoppingCart.Id +
+            '"><i class="fas fa-minus"></i></button> </div>' +
+            '<span class="text-muted">' +
+            (shoppingCart.MenuItem.Price * shoppingCart.Count).toFixed(2) +
+            '</span></li > ';
+        return html;
+    }
+
+
+    AddAntiForgeryToken = function (data) {
+        data.__RequestVerificationToken = $('#__AjaxAntiForgeryForm input[name=__RequestVerificationToken]').val();
+        return data;
+    };
+
+</script>
+
+
+
+
+
+
+
+
+@*<button type="button" class="btn btn-sm btn-primary btn__plus" asp-controller="Home" asp-action="Plus" asp-route-cartId="@shoppingCart.Id.ToString()"><i class="fas fa-plus"></i></button>
+    <button type="button" class="btn btn-sm btn-danger btn__minus" asp-controller="Home" asp-action="Minus" asp-route-cartId="@shoppingCart.Id"><i class="fas fa-minus"></i></button>*@

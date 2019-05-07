@@ -1,0 +1,37 @@
+﻿@using Microsoft.Data.OData
+@using Tangy.Utility
+@model Tangy.Models.OrderViewModel.OrderListViewModel
+@{
+    ViewData["Title"] = "OrderHistory";
+}
+
+<br/>
+<h2>OrderHistory</h2>
+<br/>
+@if (Model.Orders.Any())
+{
+     foreach (var order in Model.Orders)
+     {
+         <div style="padding: 15px;">
+             @Html.Partial("_IndividuLOrderDetailsPartial", order)
+         </div>
+         if (order.OrderHeader.Status == SD.StatusSubmitted)
+         {
+             <div style="padding: 15px;">
+                 @Html.Partial("_orderSubmittedPartial")
+             </div>
+         }
+    }
+}
+else
+{
+    <div> No orders Added Yet</div>
+}
+
+@if (Model.PagingInfo.totalPage > 1)
+{
+    <div page-model="@Model.PagingInfo" page-action="OrderHistory" page-class-enabled="true" page-class="btn border" page-class-normal="btn btn-default active hover"
+         page-class-selected="btn btn-primary active" page-route="productPage" class=" btn-group m-1">
+
+    </div>
+}

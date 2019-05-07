@@ -1,0 +1,65 @@
+﻿@using Tangy.Utility
+@model IEnumerable<MenuItem>
+@inject SignInManager<ApplicationUser> SignInManager
+@{
+    ViewData["Title"] = "_MenuItemPartial";
+}
+
+
+@if (Model.Any())
+{
+    foreach (var item in Model)
+    {
+
+        <form method="post">
+            <div class="border rounded border-info row col-12" style="margin-top: 10px; margin-bottom: 10px; padding: 10px;">
+
+                <div class="col-9">
+                    @* Text box *@
+                    <div class="row">
+                        <div class="col-10">
+                            @* name && subcategories *@
+                            <label class="text-primary" style="font-size: 21px; color: maroon;">@item.Name </label>
+                            <br />
+                            <label class="badge badge-primary">@item.SubCategory.Name</label>
+                            @if (item.Spicyness != "0")
+                            {
+                                <label class="badge badge-success">@((MenuItem.ESpicy)Convert.ToInt32(item.Spicyness))</label>
+                            }
+                        </div>
+                        <div class="col-2" style="color: maroon;">
+                            @* price *@
+                            <h4>$@item.Price</h4>
+                        </div>
+                    </div>
+                    <div class="row col-12 text-justify">
+                        @* Desription and details button*@
+                        <p>@item.Description</p>
+                        <br />
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-success" style="width: 90%;"> Details </a>
+                        </div>
+                        @if (SignInManager.IsSignedIn(User))
+                        {
+                            <div class="col-3">
+                                <button type="submit" class="btn btn btn-primary" asp-controller="Home" asp-action="Plus" asp-route-itemId="@item.Id" asp-route-cartId=""><i class="fas fa-plus"></i></button>
+                                <button type="submit" class="btn btn btn-danger" asp-controller="Home" asp-action="Minus" asp-route-itemId="@item.Id"><i class="fas fa-minus"></i></button>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="col-3">
+                    @* Photo *@
+                    <img src="@item.Image" style="width: 100%; border-radius: 5px; border: 1px solid #bbb9b9" />
+                </div>
+
+
+
+
+            </div>
+
+        </form>
+    }
+}

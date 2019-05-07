@@ -1,0 +1,77 @@
+﻿@model Tangy.Models.Coupon
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<br />
+<h2>Delete Coupon</h2>
+
+<br />
+<form asp-action="Delete" method="post" enctype="multipart/form-data">
+    <div class="form-border row">
+        <div class="col-12">
+            @{
+                var base64 = Convert.ToBase64String(Model.Picture);
+                var imgsrc = string.Format("data:image/jpg;base64,{0}", base64);
+            }
+            <img src="@imgsrc" width="100%" style="border: solid 1px #a9a9a9; width: 100%;" />
+        </div>
+
+        <div class="col-8" style="padding-top: 20px;">
+            <fieldset disabled>
+            <input hidden asp-for="Id" />
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="Name" class="custom-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="Name" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="CouponType" class="custom-label"></label>
+                </div>
+                <div class="col-8">
+                    <select asp-for="CouponType" asp-items="Html.GetEnumSelectList<Coupon.EcouponType>()" class="form-control"></select>
+                </div>
+
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="Discount" class="custom-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="Discount" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MinimumAmount" class="custom-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="MinimumAmount" class="form-control" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="IsActive" class="custom-label"></label>
+                </div>
+                <div class="col-8">
+                    <input type="checkbox" asp-for="IsActive" class="form-check" style="width: 70%; height: 80%;" />
+                </div>
+            </div>
+
+            </fieldset>
+            <div class="row">
+                <div class="col-4"></div>
+                <div class="col-4">
+                    <input type="submit" class="btn btn-danger" value="Delete" asp-route-id="@Model.Id" />
+                    <a asp-action="Index" class=" btn btn-success"> Index </a>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</form>
